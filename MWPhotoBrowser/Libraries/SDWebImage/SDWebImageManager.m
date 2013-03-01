@@ -64,6 +64,12 @@ static SDWebImageManager *instance;
 
 - (NSString *)cacheKeyForURL:(NSURL *)url
 {
+    // Raj:
+#ifdef USE_TTURL_CACHE_PATH_IN_SDBROWSER
+    NSString *stringURL = [[url absoluteString] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    NSString *ttURLKey = [[TTURLCache sharedCache] keyForURL:stringURL];
+    return ttURLKey;
+#else
 #if NS_BLOCKS_AVAILABLE
     if (self.cacheKeyFilter)
     {
@@ -75,6 +81,7 @@ static SDWebImageManager *instance;
     }
 #else
     return [url absoluteString];
+#endif
 #endif
 }
 

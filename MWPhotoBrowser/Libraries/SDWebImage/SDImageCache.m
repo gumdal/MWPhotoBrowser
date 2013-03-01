@@ -127,6 +127,11 @@ static natural_t get_free_memory(void)
 
 - (NSString *)cachePathForKey:(NSString *)key
 {
+    // Raj:
+#ifdef USE_TTURL_CACHE_PATH_IN_SDBROWSER
+    NSString *tturlCachePath = [[TTURLCache sharedCache] cachePathForKey:key];
+    return tturlCachePath;
+#else
     const char *str = [key UTF8String];
     unsigned char r[CC_MD5_DIGEST_LENGTH];
     CC_MD5(str, (CC_LONG)strlen(str), r);
@@ -134,6 +139,7 @@ static natural_t get_free_memory(void)
                           r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12], r[13], r[14], r[15]];
 
     return [diskCachePath stringByAppendingPathComponent:filename];
+#endif
 }
 
 - (void)storeKeyWithDataToDisk:(NSArray *)keyAndData
