@@ -98,7 +98,6 @@
 - (CGRect)frameForCaptionView:(MWCaptionView *)captionView atIndex:(NSUInteger)index;
 
 // Navigation
-- (void)updateNavigation;
 - (void)jumpToPageAtIndex:(NSUInteger)index;
 - (void)gotoPreviousPage;
 - (void)gotoNextPage;
@@ -139,6 +138,18 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 @synthesize displayActionButton = _displayActionButton, actionsSheet = _actionsSheet;
 @synthesize progressHUD = _progressHUD;
 @synthesize previousViewControllerBackButton = _previousViewControllerBackButton;
+@synthesize fullScreenConfiguration = fullScreenConfiguration_;
+-(void)setFullScreenConfiguration:(BOOL)inFullScreenConfiguration
+{
+    if (inFullScreenConfiguration!=fullScreenConfiguration_)
+    {
+        fullScreenConfiguration_ = inFullScreenConfiguration;
+        [self setWantsFullScreenLayout:fullScreenConfiguration_];
+        [self setDisplayActionButton:fullScreenConfiguration_];
+        self.hidesBottomBarWhenPushed = fullScreenConfiguration_;
+        [self reloadData];
+    }
+}
 
 #pragma mark - NSObject
 
@@ -164,6 +175,8 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
                                                  selector:@selector(handleMWPhotoLoadingDidEndNotification:)
                                                      name:MWPHOTO_LOADING_DID_END_NOTIFICATION
                                                    object:nil];
+        
+        [self setFullScreenConfiguration:YES];
     }
     return self;
 }
@@ -272,9 +285,14 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     [_recycledPages removeAllObjects];
     
     // Toolbar
-    if (numberOfPhotos > 1 || _displayActionButton) {
+//    if (numberOfPhotos > 1 || _displayActionButton)
+    // Raj:
+    if (numberOfPhotos > 1 && _displayActionButton)
+    {
         [self.view addSubview:_toolbar];
-    } else {
+    }
+    else
+    {
         [_toolbar removeFromSuperview];
     }
     
@@ -289,7 +307,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     [items addObject:flexSpace];
     if (numberOfPhotos > 1) [items addObject:_nextButton];
     [items addObject:flexSpace];
-    if (_displayActionButton) [items addObject:_actionButton];
+    if (_displayActionButton && _actionButton) [items addObject:_actionButton];
     [_toolbar setItems:items];
     [items release];
 	[self updateNavigation];
@@ -859,11 +877,14 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 - (void)updateNavigation {
     
 	// Title
-	if ([self numberOfPhotos] > 1) {
-		self.title = [NSString stringWithFormat:@"%i %@ %i", _currentPageIndex+1, NSLocalizedString(@"of", @"Used in the context: 'Showing 1 of 3 items'"), [self numberOfPhotos]];		
-	} else {
-		self.title = nil;
+    // Raj: To provide facility of showing the title text on the parentViewController's navigation bar when not in full screen
+    NSString *navTitleString = nil;
+	if ([self numberOfPhotos] > 1)
+    {
+		navTitleString = [NSString stringWithFormat:@"%i %@ %i", _currentPageIndex+1, NSLocalizedString(@"of", @"Used in the context: 'Showing 1 of 3 items'"), [self numberOfPhotos]];
 	}
+    
+    self.title = navTitleString;
 	
 	// Buttons
 	_previousButton.enabled = (_currentPageIndex > 0);
@@ -907,9 +928,12 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
         }
         
         // Status Bar
-        if ([UIApplication instancesRespondToSelector:@selector(setStatusBarHidden:withAnimation:)]) {
+        if ([UIApplication instancesRespondToSelector:@selector(setStatusBarHidden:withAnimation:)])
+        {
             [[UIApplication sharedApplication] setStatusBarHidden:hidden withAnimation:animated?UIStatusBarAnimationFade:UIStatusBarAnimationNone];
-        } else {
+        }
+        else
+        {
             [[UIApplication sharedApplication] setStatusBarHidden:hidden animated:animated];
         }
         

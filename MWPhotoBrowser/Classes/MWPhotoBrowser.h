@@ -34,6 +34,9 @@
 // Properties
 @property (nonatomic) BOOL displayActionButton;
 
+// Raj:
+@property (nonatomic, assign, getter = isFullScreenConfiguration) BOOL fullScreenConfiguration;
+
 // Init
 - (id)initWithPhotos:(NSArray *)photosArray  __attribute__((deprecated)); // Depreciated
 - (id)initWithDelegate:(id <MWPhotoBrowserDelegate>)delegate;
@@ -43,6 +46,9 @@
 
 // Set page that photo browser starts on
 - (void)setInitialPageIndex:(NSUInteger)index;
+
+// Protected:
+- (void)updateNavigation;
 
 @end
 
