@@ -139,14 +139,14 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 @synthesize progressHUD = _progressHUD;
 @synthesize previousViewControllerBackButton = _previousViewControllerBackButton;
 @synthesize fullScreenConfiguration = fullScreenConfiguration_;
--(void)setFullScreenConfiguration:(BOOL)inFullScreenConfiguration
+-(void)setFullScreenConfiguration:(NSNumber *)inFullScreenConfiguration
 {
     if (inFullScreenConfiguration!=fullScreenConfiguration_)
     {
-        fullScreenConfiguration_ = inFullScreenConfiguration;
-        [self setWantsFullScreenLayout:fullScreenConfiguration_];
-        [self setDisplayActionButton:fullScreenConfiguration_];
-        self.hidesBottomBarWhenPushed = fullScreenConfiguration_;
+        fullScreenConfiguration_ = [inFullScreenConfiguration retain];
+        [self setWantsFullScreenLayout:[fullScreenConfiguration_ boolValue]];
+        [self setDisplayActionButton:[fullScreenConfiguration_ boolValue]];
+        self.hidesBottomBarWhenPushed = [fullScreenConfiguration_ boolValue];
         [self reloadData];
     }
 }
@@ -176,7 +176,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
                                                      name:MWPHOTO_LOADING_DID_END_NOTIFICATION
                                                    object:nil];
         
-        [self setFullScreenConfiguration:YES];
+//        [self setFullScreenConfiguration:[NSNumber numberWithBool:YES]];
     }
     return self;
 }
@@ -213,6 +213,7 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
     [[SDImageCache sharedImageCache] clearMemory]; // clear memory
     [_photos release];
     [_progressHUD release];
+    [fullScreenConfiguration_ release];
     [super dealloc];
 }
 

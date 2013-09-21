@@ -39,7 +39,7 @@
 -(void)updateNavigation
 {
     [super updateNavigation];
-    if (!self.fullScreenConfiguration)
+    if (!self.fullScreenConfiguration.boolValue)
     {
         [self.baseViewController setTitle:self.title];
     }

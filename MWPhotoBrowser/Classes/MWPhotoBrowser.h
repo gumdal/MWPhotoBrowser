@@ -35,7 +35,7 @@
 @property (nonatomic) BOOL displayActionButton;
 
 // Raj:
-@property (nonatomic, assign, getter = isFullScreenConfiguration) BOOL fullScreenConfiguration;
+@property (nonatomic, retain, getter = isFullScreenConfiguration) NSNumber *fullScreenConfiguration;
 
 // Init
 - (id)initWithPhotos:(NSArray *)photosArray  __attribute__((deprecated)); // Depreciated
