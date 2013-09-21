@@ -235,8 +235,14 @@ navigationBarBackgroundImageLandscapePhone = _navigationBarBackgroundImageLandsc
 #pragma mark - View Loading
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
-- (void)viewDidLoad {
-	
+- (void)viewDidLoad
+{
+    if ([self respondsToSelector:@selector(automaticallyAdjustsScrollViewInsets)])
+    {
+        // To fix the weird positioning of images: http://stackoverflow.com/a/18925475/260665
+        self.automaticallyAdjustsScrollViewInsets = NO;
+    }
+    
 	// View
 	self.view.backgroundColor = [UIColor blackColor];
 	
